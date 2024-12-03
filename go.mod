@@ -1,4 +1,4 @@
-module ts-migration-tools
+module typesense-migration-tools
 
 go 1.22.0
 

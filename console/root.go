@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"ts-migration-tools/config"
+	"typesense-migration-tools/config"
 
 	runtime "github.com/banzaicloud/logrus-runtime-formatter"
 	log "github.com/sirupsen/logrus"
@@ -13,7 +13,7 @@ import (
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "ts-migration-tools",
+	Use:   "typesense-migration-tools",
 	Short: "Typesense Migration Tools CLI",
 	Long:  `CLI Tools for Typesense Migration Tools`,
 }

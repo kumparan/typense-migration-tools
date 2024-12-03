@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ts-migration-tools/console"
+	"typesense-migration-tools/console"
 )
 
 func main() {

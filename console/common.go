@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"ts-migration-tools/config"
+	"typesense-migration-tools/config"
 
 	"github.com/kumparan/go-connect"
 	"github.com/kumparan/go-utils"

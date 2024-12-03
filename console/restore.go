@@ -5,7 +5,7 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"ts-migration-tools/config"
+	"typesense-migration-tools/config"
 
 	"github.com/kumparan/go-utils"
 	log "github.com/sirupsen/logrus"
