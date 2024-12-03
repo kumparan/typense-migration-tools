@@ -24,7 +24,7 @@ test-only: check-gotest
 	SVC_ENV=test SVC_DISABLE_CACHING=true $(test_command) -timeout 60s
 
 check-cognitive-complexity:
-	find . -type f -name '*.go' -exec gocognit -over 35 {} +
+	find . -type f -name '*.go' -exec gocognit -over 17 {} +
 
 lint: check-cognitive-complexity
 	golangci-lint run
