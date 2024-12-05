@@ -24,44 +24,39 @@ func HTTPTimeout() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("http_connection_settings.timeout"), DefaultHTTPTimeout)
 }
 
-// TypesenseHost :nodoc:
-func TypesenseHost() string {
-	return viper.GetString("typesense.host")
+// MigrationSourceTypesenseHost :nodoc:
+func MigrationSourceTypesenseHost() string {
+	return viper.GetString("migration.source.typesense.host")
 }
 
-// TypesenseAPIKey :nodoc:
-func TypesenseAPIKey() string {
-	return viper.GetString("typesense.api_key")
+// MigrationSourceTypesenseAPIKey :nodoc:
+func MigrationSourceTypesenseAPIKey() string {
+	return viper.GetString("migration.source.typesense.api_key")
 }
 
-// TypesenseEnableRead :nodoc:
-func TypesenseEnableRead() bool {
-	return viper.GetBool("typesense.enable_read")
+// MigrationDestinationTypesenseHost :nodoc:
+func MigrationDestinationTypesenseHost() string {
+	return viper.GetString("migration.destination.typesense.host")
 }
 
-// TypesenseEnableCache :nodoc:
-func TypesenseEnableCache() bool {
-	return viper.GetBool("typesense.enable_cache")
+// MigrationDestinationTypesenseAPIKey :nodoc:
+func MigrationDestinationTypesenseAPIKey() string {
+	return viper.GetString("migration.destination.typesense.api_key")
 }
 
-// TypesenseCacheTTL :nodoc:
-func TypesenseCacheTTL() int {
-	return utils.ValueOrDefault(viper.GetInt("typesense.cache_ttl"), DefaultTypesenseCacheTTL)
-}
-
-// MigrationSizePerPage :nodoc:
-func MigrationSizePerPage() int {
-	return utils.ValueOrDefault[int](viper.GetInt("migration.size_per_page"), DefaultMigrationSizePerPage)
+// MigrationBatchSize :nodoc:
+func MigrationBatchSize() int {
+	return utils.ValueOrDefault[int](viper.GetInt("migration.batch_size"), DefaultMigrationBatchSize)
 }
 
 // MigrationSourceCollection :nodoc:
 func MigrationSourceCollection() string {
-	return viper.GetString("migration.source_collection")
+	return viper.GetString("migration.source.collection")
 }
 
 // MigrationDestinationCollection :nodoc:
 func MigrationDestinationCollection() string {
-	return viper.GetString("migration.destination_collection")
+	return viper.GetString("migration.destination.collection")
 }
 
 // MigrationIncludeFields :nodoc:
@@ -82,6 +77,16 @@ func MigrationSorter() string {
 // MigrationFilter :nodoc:
 func MigrationFilter() string {
 	return viper.GetString("migration.filter")
+}
+
+// BackupTypesenseHost :nodoc:
+func BackupTypesenseHost() string {
+	return viper.GetString("backup.typesense.host")
+}
+
+// BackupTypesenseAPIKey :nodoc:
+func BackupTypesenseAPIKey() string {
+	return viper.GetString("backup.typesense.api_key")
 }
 
 // BackupCollection :nodoc:
@@ -109,6 +114,16 @@ func BackupJSONLFilePath() string {
 	return viper.GetString("backup.jsonl_file_path")
 }
 
+// RestoreTypesenseHost :nodoc:
+func RestoreTypesenseHost() string {
+	return viper.GetString("restore.typesense.host")
+}
+
+// RestoreTypesenseAPIKey :nodoc:
+func RestoreTypesenseAPIKey() string {
+	return viper.GetString("restore.typesense.api_key")
+}
+
 // RestoreCollection :nodoc:
 func RestoreCollection() string {
 	return viper.GetString("restore.collection")
@@ -121,7 +136,42 @@ func RestoreJSONLFilePath() string {
 
 // RestoreBatchSize :nodoc:
 func RestoreBatchSize() int {
-	return utils.ValueOrDefault[int](viper.GetInt("restore.bathc_size"), DefaultRestoreBatchSize)
+	return utils.ValueOrDefault[int](viper.GetInt("restore.batch_size"), DefaultRestoreBatchSize)
+}
+
+// TypesenseHostForCollectionDeletion :nodoc:
+func TypesenseHostForCollectionDeletion() string {
+	return viper.GetString("delete_collection.typesense.host")
+}
+
+// TypesenseAPIKeyForCollectionDeletion :nodoc:
+func TypesenseAPIKeyForCollectionDeletion() string {
+	return viper.GetString("delete_collection.typesense.api_key")
+}
+
+// CollectionNameToDelete :nodoc:
+func CollectionNameToDelete() string {
+	return viper.GetString("delete_collection.collection")
+}
+
+// BatchSizeForCollectionDeletion :nodoc:
+func BatchSizeForCollectionDeletion() int {
+	return utils.ValueOrDefault[int](viper.GetInt("delete_collection.batch_size"), DefaultBatchSizeForCollectionDeletion)
+}
+
+// SorterForCollectionDeletion :nodoc:
+func SorterForCollectionDeletion() string {
+	return viper.GetString("delete_collection.sorter")
+}
+
+// SleepIntervalForCollectionDeletion :nodoc:
+func SleepIntervalForCollectionDeletion() time.Duration {
+	return utils.ValueOrDefault[time.Duration](viper.GetDuration("delete_collection.sleep_interval"), DefaultSleepIntervalForCollectionDeletion)
+}
+
+// ExcludeFieldsForCollectionDeletion :nodoc:
+func ExcludeFieldsForCollectionDeletion() []string {
+	return viper.GetStringSlice("delete_collection.exclude_fields")
 }
 
 // GetConf :nodoc:
@@ -129,7 +179,6 @@ func GetConf() {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./..")
 	viper.AddConfigPath("./../..")
-	viper.AddConfigPath("./../../..")
 	viper.SetConfigName("config")
 	viper.SetEnvPrefix("svc")
 

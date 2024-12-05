@@ -2,7 +2,9 @@ package console
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"typesense-migration-tools/config"
@@ -26,9 +28,31 @@ func init() {
 }
 
 func runBackup(_ *cobra.Command, _ []string) {
+	err := validateBackupConfig()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	fmt.Printf("Typesense Host: %s\n", config.BackupTypesenseHost())
+	fmt.Printf("Typesense API Key: %s\n", config.BackupTypesenseAPIKey())
+	fmt.Printf("Collection Name: %s\n", config.BackupCollection())
+	fmt.Printf("JSONL File Path: %s\n", config.BackupJSONLFilePath())
+	fmt.Printf("Filter: %s\n", config.BackupFilter())
+	fmt.Printf("Include Fields: %s\n", strings.Join(config.BackupIncludeFields(), ","))
+	fmt.Printf("Exclude Fields: %s\n", strings.Join(config.BackupExcludeFields(), ","))
+	fmt.Print("Do you want to proceed with these config? (yes/no): ")
+
+	var confirmation string
+	fmt.Scanln(&confirmation)
+	if confirmation != "yes" {
+		log.Println("Export operation cancelled.")
+		return
+	}
+
 	var (
 		ctx      = context.TODO()
-		tsClient = newTypesenseClient()
+		tsClient = newTypesenseClient(config.BackupTypesenseHost(), config.BackupTypesenseAPIKey())
 	)
 
 	exportParams := &typesenseAPI.ExportDocumentsParams{}
@@ -74,4 +98,22 @@ func runBackup(_ *cobra.Command, _ []string) {
 	}
 
 	log.Printf("Documents successfully exported to %s", config.BackupJSONLFilePath())
+}
+
+func validateBackupConfig() error {
+	parsedURL, err := url.Parse(config.BackupTypesenseHost())
+	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
+		return fmt.Errorf("invalid typesense host URL: %s", config.BackupTypesenseHost())
+	}
+
+	switch {
+	case config.BackupTypesenseAPIKey() == "":
+		return fmt.Errorf("restore.typesense.api_key cannot be empty")
+	case config.BackupCollection() == "":
+		return fmt.Errorf("restore.collection cannot be empty")
+	case config.BackupJSONLFilePath() == "":
+		return fmt.Errorf("restore.jsonl_file_path cannot be empty")
+	}
+
+	return nil
 }

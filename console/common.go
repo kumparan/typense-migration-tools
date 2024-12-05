@@ -10,7 +10,6 @@ import (
 	"github.com/kumparan/go-utils"
 	"github.com/typesense/typesense-go/v2/typesense"
 	typesenseAPI "github.com/typesense/typesense-go/v2/typesense/api"
-	typesensePtr "github.com/typesense/typesense-go/v2/typesense/api/pointer"
 )
 
 func newHTTPClient() *http.Client {
@@ -21,10 +20,10 @@ func newHTTPClient() *http.Client {
 	})
 }
 
-func newTypesenseClient() typesense.APIClientInterface {
+func newTypesenseClient(host, apiKey string) typesense.APIClientInterface {
 	cli, err := typesenseAPI.NewClientWithResponses(
-		config.TypesenseHost(),
-		typesenseAPI.WithAPIKey(config.TypesenseAPIKey()),
+		host,
+		typesenseAPI.WithAPIKey(apiKey),
 		typesenseAPI.WithHTTPClient(newHTTPClient()),
 	)
 	if err != nil {
@@ -32,13 +31,6 @@ func newTypesenseClient() typesense.APIClientInterface {
 	}
 
 	return cli
-}
-
-func setTypesenseCacheParams(searchParams *typesenseAPI.SearchCollectionParams) {
-	if config.TypesenseEnableCache() {
-		searchParams.UseCache = typesensePtr.True()
-		searchParams.CacheTtl = typesensePtr.Int(config.TypesenseCacheTTL())
-	}
 }
 
 func isTypesenseErrorResponse(response *typesenseAPI.SearchCollectionResponse) bool {

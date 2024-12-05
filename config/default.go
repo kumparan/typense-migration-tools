@@ -7,9 +7,10 @@ const (
 	DefaultHTTPTLSHandshakeTimeout = 5 * time.Second
 	DefaultTLSInsecureSkipVerify   = true
 
-	DefaultTypesenseCacheTTL = 5
+	DefaultSleepIntervalForCollectionDeletion = time.Second
 
-	DefaultMigrationSizePerPage = 100
-	DefaultBackupSizePerPage    = 100
-	DefaultRestoreBatchSize     = 100
+	DefaultMigrationBatchSize             = 100
+	DefaultBackupBatchSize                = 100
+	DefaultRestoreBatchSize               = 100
+	DefaultBatchSizeForCollectionDeletion = 100
 )

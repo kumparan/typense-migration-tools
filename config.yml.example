@@ -2,13 +2,18 @@ log_level: "debug"
 http_connection_settings:
   timeout: "10s"
   tls_handshake_timeout: "5s"
-typesense:
-  host: "http://localhost:8108"
-  api_key: "your-api-key"
 migration:
-  size_per_page: "100"
-  source_collection: "collection_a"
-  destination_collection: "collection_b"
+  source:
+    collection: "collection_a"
+    typesense:
+      host: "http://localhost:8108"
+      api_key: "your-api-key"
+  destination:
+    collection: "collection_b"
+    typesense:
+      host: "http://localhost:8108"
+      api_key: "your-api-key"
+  batch_size: "100"
   sorter: "created_at:desc"
   filter: "created_at:<1488325530496000000"
   include_fields:
@@ -18,7 +23,10 @@ migration:
   exclude_fields:
     - "out_of"
 backup:
-  size_per_page: "100"
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
+  batch_size: "100"
   collection: "collection_name"
   jsonl_file_path: "path/to/example.jsonl"
   filter: "created_at:<1488325530496000000"
@@ -29,6 +37,19 @@ backup:
   exclude_fields:
     - "out_of"
 restore:
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
   collection: "collection_name"
   jsonl_file_path: "path/to/example.jsonl"
   batch_size: "100"
+delete_collection:
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
+  collection: "collection_name"
+  batch_size: "100"
+  sorter: "created_at:asc"
+  sleep_interval: "1s"
+  exclude_fields:
+    - "out_of"
