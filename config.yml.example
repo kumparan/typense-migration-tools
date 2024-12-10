@@ -15,6 +15,7 @@ migration:
       api_key: "your-api-key"
   batch_size: "100"
   sorter: "created_at:desc"
+  sleep_interval: "1s"
   filter: "created_at:<1488325530496000000"
   include_fields:
     - "field1"
@@ -27,8 +28,11 @@ backup:
     host: "http://localhost:8108"
     api_key: "your-api-key"
   batch_size: "100"
+  sorter: "created_at:asc"
   collection: "collection_name"
-  jsonl_file_path: "path/to/example.jsonl"
+  folder_path: "this/is/path"
+  max_docs_per_file: "10000"
+  sleep_interval: "1s"
   filter: "created_at:<1488325530496000000"
   include_fields:
     - "field1"
@@ -41,8 +45,9 @@ restore:
     host: "http://localhost:8108"
     api_key: "your-api-key"
   collection: "collection_name"
-  jsonl_file_path: "path/to/example.jsonl"
+  folder_path: "this/is/path"
   batch_size: "100"
+  sleep_interval: "1s"
 delete_collection:
   typesense:
     host: "http://localhost:8108"

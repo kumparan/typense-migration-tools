@@ -7,6 +7,9 @@ const (
 	DefaultHTTPTLSHandshakeTimeout = 5 * time.Second
 	DefaultTLSInsecureSkipVerify   = true
 
+	DefaultMigrationSleepInterval             = time.Second
+	DefaultBackupSleepInterval                = time.Second
+	DefaultRestoreSleepInterval               = time.Second
 	DefaultSleepIntervalForCollectionDeletion = time.Second
 
 	DefaultMigrationBatchSize             = 100

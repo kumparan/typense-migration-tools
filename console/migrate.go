@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 	"typesense-migration-tools/config"
 
 	"github.com/kumparan/go-utils"
@@ -127,6 +128,7 @@ func runMigrate(_ *cobra.Command, _ []string) {
 			return
 		}
 
+		time.Sleep(config.MigrationSleepInterval())
 		page++
 	}
 

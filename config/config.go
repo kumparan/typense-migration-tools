@@ -49,6 +49,11 @@ func MigrationBatchSize() int {
 	return utils.ValueOrDefault[int](viper.GetInt("migration.batch_size"), DefaultMigrationBatchSize)
 }
 
+// MigrationSleepInterval :nodoc:
+func MigrationSleepInterval() time.Duration {
+	return utils.ValueOrDefault[time.Duration](viper.GetDuration("migration.sleep_interval"), DefaultMigrationSleepInterval)
+}
+
 // MigrationSourceCollection :nodoc:
 func MigrationSourceCollection() string {
 	return viper.GetString("migration.source.collection")
@@ -94,6 +99,11 @@ func BackupCollection() string {
 	return viper.GetString("backup.collection")
 }
 
+// BackupSleepInterval :nodoc:
+func BackupSleepInterval() time.Duration {
+	return utils.ValueOrDefault[time.Duration](viper.GetDuration("backup.sleep_interval"), DefaultBackupSleepInterval)
+}
+
 // BackupIncludeFields :nodoc:
 func BackupIncludeFields() []string {
 	return viper.GetStringSlice("backup.include_fields")
@@ -109,9 +119,29 @@ func BackupFilter() string {
 	return viper.GetString("backup.filter")
 }
 
-// BackupJSONLFilePath :nodoc:
-func BackupJSONLFilePath() string {
-	return viper.GetString("backup.jsonl_file_path")
+// BackupFolderPath :nodoc:
+func BackupFolderPath() string {
+	return viper.GetString("backup.folder_path")
+}
+
+// BackupMaxDocsPerFile :nodoc:
+func BackupMaxDocsPerFile() int {
+	return viper.GetInt("backup.max_docs_per_file")
+}
+
+// RestoreSleepInterval :nodoc:
+func RestoreSleepInterval() time.Duration {
+	return utils.ValueOrDefault[time.Duration](viper.GetDuration("restore.sleep_interval"), DefaultRestoreSleepInterval)
+}
+
+// BackupBatchSize :nodoc:
+func BackupBatchSize() int {
+	return utils.ValueOrDefault[int](viper.GetInt("backup.batch_size"), DefaultBackupBatchSize)
+}
+
+// BackupSorter :nodoc:
+func BackupSorter() string {
+	return viper.GetString("backup.sorter")
 }
 
 // RestoreTypesenseHost :nodoc:
@@ -129,9 +159,9 @@ func RestoreCollection() string {
 	return viper.GetString("restore.collection")
 }
 
-// RestoreJSONLFilePath :nodoc:
-func RestoreJSONLFilePath() string {
-	return viper.GetString("restore.jsonl_file_path")
+// RestoreFolderPath :nodoc:
+func RestoreFolderPath() string {
+	return viper.GetString("restore.folder_path")
 }
 
 // RestoreBatchSize :nodoc:

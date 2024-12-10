@@ -1,12 +1,14 @@
 package console
 
 import (
+	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 	"strings"
+	"time"
 	"typesense-migration-tools/config"
 
 	"github.com/kumparan/go-utils"
@@ -37,8 +39,11 @@ func runBackup(_ *cobra.Command, _ []string) {
 	fmt.Printf("Typesense Host: %s\n", config.BackupTypesenseHost())
 	fmt.Printf("Typesense API Key: %s\n", config.BackupTypesenseAPIKey())
 	fmt.Printf("Collection Name: %s\n", config.BackupCollection())
-	fmt.Printf("JSONL File Path: %s\n", config.BackupJSONLFilePath())
+	fmt.Printf("Folder Path: %s\n", config.BackupFolderPath())
+	fmt.Printf("Batch Size: %d\n", config.BackupBatchSize())
+	fmt.Printf("Max Docs Per File: %d\n", config.BackupMaxDocsPerFile())
 	fmt.Printf("Filter: %s\n", config.BackupFilter())
+	fmt.Printf("Sorter: %s\n", config.BackupSorter())
 	fmt.Printf("Include Fields: %s\n", strings.Join(config.BackupIncludeFields(), ","))
 	fmt.Printf("Exclude Fields: %s\n", strings.Join(config.BackupExcludeFields(), ","))
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
@@ -51,53 +56,71 @@ func runBackup(_ *cobra.Command, _ []string) {
 	}
 
 	var (
-		ctx      = context.TODO()
-		tsClient = newTypesenseClient(config.BackupTypesenseHost(), config.BackupTypesenseAPIKey())
+		ctx        = context.TODO()
+		tsClient   = newTypesenseClient(config.BackupTypesenseHost(), config.BackupTypesenseAPIKey())
+		page       = 1
+		chunk      = make([]string, 0, config.BackupMaxDocsPerFile())
+		chunkCount = 0
 	)
 
-	exportParams := &typesenseAPI.ExportDocumentsParams{}
-	if len(config.BackupIncludeFields()) > 0 {
-		exportParams.IncludeFields = typesensePtr.String(strings.Join(config.BackupIncludeFields(), ","))
+	for {
+		searchParams := buildBackupSearchParams(page)
+
+		logger := log.WithFields(log.Fields{
+			"context":         utils.DumpIncomingContext(ctx),
+			"searchParams":    utils.Dump(searchParams),
+			"collection":      config.BackupCollection(),
+			"typesenseHost":   config.BackupTypesenseHost(),
+			"typesenseAPIKey": config.BackupTypesenseAPIKey(),
+		})
+
+		searchResult, err := tsClient.SearchCollectionWithResponse(ctx, config.BackupCollection(), searchParams)
+		switch {
+		case err != nil:
+			logger.Error(err)
+			return
+		case isTypesenseErrorResponse(searchResult):
+			err = dumpTypesenseSearchResponseError(searchResult)
+			logger.Error(err)
+			return
+		case len(*searchResult.JSON200.Hits) <= 0:
+			goto WriteRemainingData
+		}
+
+		for _, item := range *searchResult.JSON200.Hits {
+			doc, err := json.Marshal(*item.Document)
+			if err != nil {
+				logger.Error(err)
+				return
+			}
+			chunk = append(chunk, string(doc))
+		}
+
+		chunkTotalLines := len(chunk)
+		log.Printf("Chunk progress: %d/%d", chunkTotalLines, config.BackupMaxDocsPerFile())
+		if chunkTotalLines >= config.BackupMaxDocsPerFile() {
+			if err := writeChunkToFile(chunk, chunkCount); err != nil {
+				logger.Error(err)
+				return
+			}
+
+			chunk = chunk[:0]
+			chunkCount++
+		}
+
+		time.Sleep(config.BackupSleepInterval())
+		page++
 	}
 
-	if len(config.BackupExcludeFields()) > 0 {
-		exportParams.ExcludeFields = typesensePtr.String(strings.Join(config.BackupExcludeFields(), ","))
+WriteRemainingData:
+	if len(chunk) > 0 {
+		if err := writeChunkToFile(chunk, chunkCount); err != nil {
+			log.Error(err)
+			return
+		}
 	}
 
-	if len(config.BackupFilter()) > 0 {
-		exportParams.FilterBy = typesensePtr.String(config.BackupFilter())
-	}
-
-	logger := log.WithFields(log.Fields{
-		"context":      utils.DumpIncomingContext(ctx),
-		"exportParams": utils.Dump(exportParams),
-		"collection":   config.BackupCollection(),
-	})
-
-	resp, err := tsClient.ExportDocumentsWithResponse(ctx, config.BackupCollection(), exportParams)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
-	if resp.StatusCode() != http.StatusOK {
-		err = dumpTypesenseError(resp.JSON404)
-		logger.Error(err)
-		return
-	}
-
-	outputFile, err := os.Create(config.BackupJSONLFilePath())
-	if err != nil {
-		logger.Fatalf("Failed to create output file: %v", err)
-	}
-	defer outputFile.Close()
-
-	_, err = outputFile.Write(resp.Body)
-	if err != nil {
-		log.Fatalf("Failed to write data to file: %v", err)
-	}
-
-	log.Printf("Documents successfully exported to %s", config.BackupJSONLFilePath())
+	log.Printf("Documents successfully exported to folder %s", config.BackupFolderPath())
 }
 
 func validateBackupConfig() error {
@@ -108,12 +131,75 @@ func validateBackupConfig() error {
 
 	switch {
 	case config.BackupTypesenseAPIKey() == "":
-		return fmt.Errorf("restore.typesense.api_key cannot be empty")
+		return fmt.Errorf("backup.typesense.api_key cannot be empty")
 	case config.BackupCollection() == "":
-		return fmt.Errorf("restore.collection cannot be empty")
-	case config.BackupJSONLFilePath() == "":
-		return fmt.Errorf("restore.jsonl_file_path cannot be empty")
+		return fmt.Errorf("backup.collection cannot be empty")
+	case config.BackupFolderPath() == "":
+		return fmt.Errorf("backup.folder_path cannot be empty")
+	case config.BackupBatchSize() <= 0:
+		return fmt.Errorf("backup.batch_size must be a positive integer")
+	case config.BackupMaxDocsPerFile() <= 0:
+		return fmt.Errorf("backup.max_docs_per_file must be a positive integer")
 	}
+
+	return nil
+}
+
+func buildBackupSearchParams(page int) (searchParams *typesenseAPI.SearchCollectionParams) {
+	searchParams = &typesenseAPI.SearchCollectionParams{
+		Q:       typesensePtr.String("*"),
+		PerPage: typesensePtr.Int(config.BackupBatchSize()),
+		Page:    typesensePtr.Int(page),
+	}
+	if len(config.BackupSorter()) > 0 {
+		searchParams.SortBy = typesensePtr.String(config.BackupSorter())
+	}
+
+	if len(config.BackupIncludeFields()) > 0 {
+		searchParams.IncludeFields = typesensePtr.String(strings.Join(config.BackupIncludeFields(), ","))
+	}
+
+	if len(config.BackupExcludeFields()) > 0 {
+		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.BackupExcludeFields(), ","))
+	}
+
+	if len(config.BackupFilter()) > 0 {
+		searchParams.FilterBy = typesensePtr.String(config.BackupFilter())
+	}
+
+	return
+}
+
+func writeChunkToFile(chunk []string, chunkCount int) error {
+	filename := fmt.Sprintf("%s/backup_chunk_%d.jsonl", config.BackupFolderPath(), chunkCount)
+	logger := log.WithField("filename", filename)
+
+	file, err := os.Create(filename)
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	chunkTotalLines := len(chunk)
+	for i, line := range chunk {
+		if i+1 == chunkTotalLines {
+			if _, err := writer.WriteString(line); err != nil {
+				logger.Error(err)
+				return err
+			}
+			break
+		}
+		if _, err := writer.WriteString(line + "\n"); err != nil {
+			logger.Error(err)
+			return err
+		}
+	}
+
+	writer.Flush()
+
+	log.Printf("Documents successfully exported to file %s", filename)
 
 	return nil
 }

@@ -21,9 +21,9 @@ Tools for backup, restore, migrating documents, and deleting collection graceful
    ```
 
 ## Backup
-Backup console application allows you to export documents from a Typesense collection to a JSONL file.
+Backup console application allows you to back up documents from a Typesense collection into JSONL files. The application fetches documents using a paginated query and saves them in chunks to minimize memory usage.
 - Ensure that your Typesense server is running and accessible.
-- The specified collection must exist and contain data for export.
+- The specified collection must exist and contain data for back up.
 
 ### Usage
 1. Run the application:
@@ -37,8 +37,11 @@ Backup console application allows you to export documents from a Typesense colle
    Typesense Host: http://localhost:8108
    Typesense API Key: YOUR_API_KEY
    Collection Name: collection_name
-   JSONL File Path: path/to/example.jsonl
+   Folder Path: this/is/path
+   Batch Size: 100
+   Max Docs Per File: 10000
    Filter: created_at:<1488325530496000000
+   Sorter: created_at:asc
    Include Fields: field1,field2,field3
    Exclude Fields: out_of
    Do you want to proceed with these credentials? (yes/no):
@@ -47,7 +50,7 @@ Backup console application allows you to export documents from a Typesense colle
 
 3. The application will export the documents from the specified collection and save them to a JSONL file:
    ```
-   Documents successfully exported to path/to/example.jsonl
+   Documents successfully exported to this/is/path
    ```
 
 ### Example Output
@@ -73,7 +76,7 @@ Restore console application allows you to import documents to a Typesense collec
    Typesense Host: http://localhost:8108
    Typesense API Key: YOUR_API_KEY
    Collection Name: collection_name
-   JSONL File Path: path/to/example.jsonl
+   Folder Path: this/is/path
    Batch Size: 100
    Do you want to proceed with these credentials? (yes/no):
    ```
