@@ -44,8 +44,8 @@ func runBackup(_ *cobra.Command, _ []string) {
 	fmt.Printf("Max Docs Per File: %d\n", config.BackupMaxDocsPerFile())
 	fmt.Printf("Filter: %s\n", config.BackupFilter())
 	fmt.Printf("Sorter: %s\n", config.BackupSorter())
-	fmt.Printf("Include Fields: %s\n", strings.Join(config.BackupIncludeFields(), ","))
-	fmt.Printf("Exclude Fields: %s\n", strings.Join(config.BackupExcludeFields(), ","))
+	fmt.Printf("Included Fields: %s\n", strings.Join(config.BackupIncludedFields(), ","))
+	fmt.Printf("Excluded Fields: %s\n", strings.Join(config.BackupExcludedFields(), ","))
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
 	var confirmation string
@@ -155,12 +155,12 @@ func buildBackupSearchParams(page int) (searchParams *typesenseAPI.SearchCollect
 		searchParams.SortBy = typesensePtr.String(config.BackupSorter())
 	}
 
-	if len(config.BackupIncludeFields()) > 0 {
-		searchParams.IncludeFields = typesensePtr.String(strings.Join(config.BackupIncludeFields(), ","))
+	if len(config.BackupIncludedFields()) > 0 {
+		searchParams.IncludeFields = typesensePtr.String(strings.Join(config.BackupIncludedFields(), ","))
 	}
 
-	if len(config.BackupExcludeFields()) > 0 {
-		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.BackupExcludeFields(), ","))
+	if len(config.BackupExcludedFields()) > 0 {
+		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.BackupExcludedFields(), ","))
 	}
 
 	if len(config.BackupFilter()) > 0 {

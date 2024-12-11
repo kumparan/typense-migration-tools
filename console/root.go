@@ -18,7 +18,7 @@ var RootCmd = &cobra.Command{
 	Long:  `CLI Tools for Typesense Migration Tools`,
 }
 
-// Execute :nodoc:
+// Execute runs the root command of the CLI application
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)

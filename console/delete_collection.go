@@ -38,7 +38,7 @@ func runDeleteCollection(_ *cobra.Command, _ []string) {
 	fmt.Printf("Typesense API Key: %s\n", config.TypesenseAPIKeyForCollectionDeletion())
 	fmt.Printf("Collection Name: %s\n", config.CollectionNameToDelete())
 	fmt.Printf("Batch Size: %d\n", config.BatchSizeForCollectionDeletion())
-	fmt.Printf("Exclude Fields: %s\n", strings.Join(config.ExcludeFieldsForCollectionDeletion(), ","))
+	fmt.Printf("Excluded Fields: %s\n", strings.Join(config.ExcludedFieldsForCollectionDeletion(), ","))
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
 	var confirmation string
@@ -130,8 +130,8 @@ func buildSearchParamsForCollectionDeletion() (searchParams *typesenseAPI.Search
 		IncludeFields: typesensePtr.String("id"),
 	}
 
-	if len(config.ExcludeFieldsForCollectionDeletion()) > 0 {
-		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.ExcludeFieldsForCollectionDeletion(), ","))
+	if len(config.ExcludedFieldsForCollectionDeletion()) > 0 {
+		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.ExcludedFieldsForCollectionDeletion(), ","))
 	}
 
 	if config.SorterForCollectionDeletion() != "" {

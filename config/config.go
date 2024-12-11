@@ -9,202 +9,202 @@ import (
 	"github.com/spf13/viper"
 )
 
-// LogLevel :nodoc:
+// LogLevel determines the verbosity of the application's logging output (Trace, Debug, Info, Warning, Error, Fatal and Panic)
 func LogLevel() string {
 	return viper.GetString("log_level")
 }
 
-// HTTPTLSHandshakeTimeout :nodoc:
+// HTTPTLSHandshakeTimeout set a limit on how long the application waits for a TLS handshake to complete when establishing a connection
 func HTTPTLSHandshakeTimeout() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("http_connection_settings.tls_handshake_timeout"), DefaultHTTPTLSHandshakeTimeout)
 }
 
-// HTTPTimeout :nodoc:
+// HTTPTimeout sets the maximum duration the application waits for an HTTP request to complete before timing out
 func HTTPTimeout() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("http_connection_settings.timeout"), DefaultHTTPTimeout)
 }
 
-// MigrationSourceTypesenseHost :nodoc:
+// MigrationSourceTypesenseHost used to specify the hostname or IP address of the Typesense instance from which migration data is sourced
 func MigrationSourceTypesenseHost() string {
 	return viper.GetString("migration.source.typesense.host")
 }
 
-// MigrationSourceTypesenseAPIKey :nodoc:
+// MigrationSourceTypesenseAPIKey used to authenticate requests to the Typesense instance from which migration data is sourced
 func MigrationSourceTypesenseAPIKey() string {
 	return viper.GetString("migration.source.typesense.api_key")
 }
 
-// MigrationDestinationTypesenseHost :nodoc:
+// MigrationDestinationTypesenseHost used to specify the hostname or IP address of the Typesense instance to which migration data will be written
 func MigrationDestinationTypesenseHost() string {
 	return viper.GetString("migration.destination.typesense.host")
 }
 
-// MigrationDestinationTypesenseAPIKey :nodoc:
+// MigrationDestinationTypesenseAPIKey used to authenticate requests to the Typesense instance to which migration data will be written
 func MigrationDestinationTypesenseAPIKey() string {
 	return viper.GetString("migration.destination.typesense.api_key")
 }
 
-// MigrationBatchSize :nodoc:
+// MigrationBatchSize defines the maximum number of documents to process in a Typesense search batch
 func MigrationBatchSize() int {
 	return utils.ValueOrDefault[int](viper.GetInt("migration.batch_size"), DefaultMigrationBatchSize)
 }
 
-// MigrationSleepInterval :nodoc:
+// MigrationSleepInterval defines the duration the application waits between processing consecutive migration batches
 func MigrationSleepInterval() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("migration.sleep_interval"), DefaultMigrationSleepInterval)
 }
 
-// MigrationSourceCollection :nodoc:
+// MigrationSourceCollection specifies the collection in the source Typesense instance from which data will be migrated
 func MigrationSourceCollection() string {
 	return viper.GetString("migration.source.collection")
 }
 
-// MigrationDestinationCollection :nodoc:
+// MigrationDestinationCollection specifies the collection in the destination Typesense instance to which data will be migrated
 func MigrationDestinationCollection() string {
 	return viper.GetString("migration.destination.collection")
 }
 
-// MigrationIncludeFields :nodoc:
-func MigrationIncludeFields() []string {
-	return viper.GetStringSlice("migration.include_fields")
+// MigrationIncludedFields specifies which fields from the source collection should be migrated to the destination collection (optional)
+func MigrationIncludedFields() []string {
+	return viper.GetStringSlice("migration.included_fields")
 }
 
-// MigrationExcludeFields :nodoc:
-func MigrationExcludeFields() []string {
-	return viper.GetStringSlice("migration.exclude_fields")
+// MigrationExcludedFields specifies which fields from the source collection should not be migrated to the destination collection (optional)
+func MigrationExcludedFields() []string {
+	return viper.GetStringSlice("migration.excluded_fields")
 }
 
-// MigrationSorter :nodoc:
+// MigrationSorter specifies the field or criteria by which the data should be sorted while being migrated from the source to the destination collection
 func MigrationSorter() string {
 	return viper.GetString("migration.sorter")
 }
 
-// MigrationFilter :nodoc:
+// MigrationFilter specifies a condition or query to filter which documents from the source collection should be migrated to the destination collection
 func MigrationFilter() string {
 	return viper.GetString("migration.filter")
 }
 
-// BackupTypesenseHost :nodoc:
+// BackupTypesenseHost specifies the hostname or IP address of the Typesense server where backup operations are performed
 func BackupTypesenseHost() string {
 	return viper.GetString("backup.typesense.host")
 }
 
-// BackupTypesenseAPIKey :nodoc:
+// BackupTypesenseAPIKey used to authenticate requests to the Typesense instance during backup operations
 func BackupTypesenseAPIKey() string {
 	return viper.GetString("backup.typesense.api_key")
 }
 
-// BackupCollection :nodoc:
+// BackupCollection specifies the collection in the Typesense instance from which data will be backed up
 func BackupCollection() string {
 	return viper.GetString("backup.collection")
 }
 
-// BackupSleepInterval :nodoc:
+// BackupSleepInterval defines the duration the application waits between consecutive backup tasks
 func BackupSleepInterval() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("backup.sleep_interval"), DefaultBackupSleepInterval)
 }
 
-// BackupIncludeFields :nodoc:
-func BackupIncludeFields() []string {
-	return viper.GetStringSlice("backup.include_fields")
+// BackupIncludedFields specifies which fields from the collection should be included in the backup (optional)
+func BackupIncludedFields() []string {
+	return viper.GetStringSlice("backup.included_fields")
 }
 
-// BackupExcludeFields :nodoc:
-func BackupExcludeFields() []string {
-	return viper.GetStringSlice("backup.exclude_fields")
+// BackupExcludedFields specifies which fields from the collection should not be included in the backup (optional)
+func BackupExcludedFields() []string {
+	return viper.GetStringSlice("backup.excluded_fields")
 }
 
-// BackupFilter :nodoc:
+// BackupFilter specifies a condition or query to filter which records from the collection should be backed up
 func BackupFilter() string {
 	return viper.GetString("backup.filter")
 }
 
-// BackupFolderPath :nodoc:
+// BackupFolderPath specifies the directory location on the filesystem where the backup files will be saved
 func BackupFolderPath() string {
 	return viper.GetString("backup.folder_path")
 }
 
-// BackupMaxDocsPerFile :nodoc:
+// BackupMaxDocsPerFile defines how many documents will be stored in each backup file before creating a new one
 func BackupMaxDocsPerFile() int {
 	return viper.GetInt("backup.max_docs_per_file")
 }
 
-// RestoreSleepInterval :nodoc:
-func RestoreSleepInterval() time.Duration {
-	return utils.ValueOrDefault[time.Duration](viper.GetDuration("restore.sleep_interval"), DefaultRestoreSleepInterval)
-}
-
-// BackupBatchSize :nodoc:
+// BackupBatchSize defines the number of documents to be processed in each backup batch
 func BackupBatchSize() int {
 	return utils.ValueOrDefault[int](viper.GetInt("backup.batch_size"), DefaultBackupBatchSize)
 }
 
-// BackupSorter :nodoc:
+// BackupSorter specifies the field or criteria by which the data should be sorted while performing backup operations
 func BackupSorter() string {
 	return viper.GetString("backup.sorter")
 }
 
-// RestoreTypesenseHost :nodoc:
+// RestoreTypesenseHost specifies the hostname or IP address of the Typesense server where restore operations will be performed
 func RestoreTypesenseHost() string {
 	return viper.GetString("restore.typesense.host")
 }
 
-// RestoreTypesenseAPIKey :nodoc:
+// RestoreTypesenseAPIKey used to authenticate requests to the Typesense instance during restore operations
 func RestoreTypesenseAPIKey() string {
 	return viper.GetString("restore.typesense.api_key")
 }
 
-// RestoreCollection :nodoc:
+// RestoreCollection specifies the collection in the Typesense instance where data will be restored
 func RestoreCollection() string {
 	return viper.GetString("restore.collection")
 }
 
-// RestoreFolderPath :nodoc:
+// RestoreFolderPath specifies the directory location on the filesystem where the restore files can be found
 func RestoreFolderPath() string {
 	return viper.GetString("restore.folder_path")
 }
 
-// RestoreBatchSize :nodoc:
+// RestoreBatchSize defines the number of documents to be processed in each restore batch
 func RestoreBatchSize() int {
 	return utils.ValueOrDefault[int](viper.GetInt("restore.batch_size"), DefaultRestoreBatchSize)
 }
 
-// TypesenseHostForCollectionDeletion :nodoc:
+// RestoreSleepInterval defines the duration the application waits between consecutive restore tasks
+func RestoreSleepInterval() time.Duration {
+	return utils.ValueOrDefault[time.Duration](viper.GetDuration("restore.sleep_interval"), DefaultRestoreSleepInterval)
+}
+
+// TypesenseHostForCollectionDeletion specifies the hostname or IP address of the Typesense server where the collection deletion operation will be performed
 func TypesenseHostForCollectionDeletion() string {
 	return viper.GetString("delete_collection.typesense.host")
 }
 
-// TypesenseAPIKeyForCollectionDeletion :nodoc:
+// TypesenseAPIKeyForCollectionDeletion used to authenticate requests to the Typesense instance during the collection deletion process
 func TypesenseAPIKeyForCollectionDeletion() string {
 	return viper.GetString("delete_collection.typesense.api_key")
 }
 
-// CollectionNameToDelete :nodoc:
+// CollectionNameToDelete specifies the name of the collection that will be deleted
 func CollectionNameToDelete() string {
 	return viper.GetString("delete_collection.collection")
 }
 
-// BatchSizeForCollectionDeletion :nodoc:
+// BatchSizeForCollectionDeletion defines the number of documents to be processed in each deletion batch
 func BatchSizeForCollectionDeletion() int {
 	return utils.ValueOrDefault[int](viper.GetInt("delete_collection.batch_size"), DefaultBatchSizeForCollectionDeletion)
 }
 
-// SorterForCollectionDeletion :nodoc:
+// SorterForCollectionDeletion specifies the field or criteria by which the documents should be sorted during the deletion operation
 func SorterForCollectionDeletion() string {
 	return viper.GetString("delete_collection.sorter")
 }
 
-// SleepIntervalForCollectionDeletion :nodoc:
+// SleepIntervalForCollectionDeletion defines the duration the application waits between consecutive deletion tasks
 func SleepIntervalForCollectionDeletion() time.Duration {
 	return utils.ValueOrDefault[time.Duration](viper.GetDuration("delete_collection.sleep_interval"), DefaultSleepIntervalForCollectionDeletion)
 }
 
-// ExcludeFieldsForCollectionDeletion :nodoc:
-func ExcludeFieldsForCollectionDeletion() []string {
-	return viper.GetStringSlice("delete_collection.exclude_fields")
+// ExcludedFieldsForCollectionDeletion specifies which fields from the collection should not be included in the deletion process (optional)
+func ExcludedFieldsForCollectionDeletion() []string {
+	return viper.GetStringSlice("delete_collection.excluded_fields")
 }
 
-// GetConf :nodoc:
+// GetConf read the configuration file
 func GetConf() {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./..")

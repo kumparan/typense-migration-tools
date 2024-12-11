@@ -42,8 +42,8 @@ Backup console application allows you to back up documents from a Typesense coll
    Max Docs Per File: 10000
    Filter: created_at:<1488325530496000000
    Sorter: created_at:asc
-   Include Fields: field1,field2,field3
-   Exclude Fields: out_of
+   Included Fields: field1,field2,field3
+   Excluded Fields: out_of
    Do you want to proceed with these credentials? (yes/no):
    ```
    Type `yes` to proceed or `no` to cancel the operation.
@@ -110,8 +110,8 @@ Migrate console application allows you to import documents to a Typesense collec
    Destination Collection Name: destination_collection_name
    Filter: created_at:<1488325530496000000
    Sorter: created_at:desc
-   Include Fields: field1,field2,field3
-   Exclude Fields: out_of
+   Included Fields: field1,field2,field3
+   Excluded Fields: out_of
    Batch Size: 100
    Do you want to proceed with these credentials? (yes/no):
    ```
@@ -141,7 +141,7 @@ Delete Collection console application helps manage large-scale document deletion
    Typesense API Key: YOUR_API_KEY
    Collection Name: collection_name
    Batch Size: 100
-   Exclude Fields: out_of
+   Excluded Fields: out_of
    Do you want to proceed with these credentials? (yes/no):
    ```
    Type `yes` to proceed or `no` to cancel the operation.

@@ -45,8 +45,8 @@ func runMigrate(_ *cobra.Command, _ []string) {
 	fmt.Printf("Destination Collection Name: %s\n", config.MigrationDestinationCollection())
 	fmt.Printf("Filter: %s\n", config.MigrationFilter())
 	fmt.Printf("Sorter: %s\n", config.MigrationSorter())
-	fmt.Printf("Include Fields: %s\n", strings.Join(config.MigrationIncludeFields(), ","))
-	fmt.Printf("Exclude Fields: %s\n", strings.Join(config.MigrationExcludeFields(), ","))
+	fmt.Printf("Included Fields: %s\n", strings.Join(config.MigrationIncludedFields(), ","))
+	fmt.Printf("Excluded Fields: %s\n", strings.Join(config.MigrationExcludedFields(), ","))
 	fmt.Printf("Batch Size: %d\n", config.MigrationBatchSize())
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
@@ -146,12 +146,12 @@ func buildMigrationSearchParams(page int) (searchParams *typesenseAPI.SearchColl
 		searchParams.SortBy = typesensePtr.String(config.MigrationSorter())
 	}
 
-	if len(config.MigrationIncludeFields()) > 0 {
-		searchParams.IncludeFields = typesensePtr.String(strings.Join(config.MigrationIncludeFields(), ","))
+	if len(config.MigrationIncludedFields()) > 0 {
+		searchParams.IncludeFields = typesensePtr.String(strings.Join(config.MigrationIncludedFields(), ","))
 	}
 
-	if len(config.MigrationExcludeFields()) > 0 {
-		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.MigrationExcludeFields(), ","))
+	if len(config.MigrationExcludedFields()) > 0 {
+		searchParams.ExcludeFields = typesensePtr.String(strings.Join(config.MigrationExcludedFields(), ","))
 	}
 
 	if len(config.MigrationFilter()) > 0 {

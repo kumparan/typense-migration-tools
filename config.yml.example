@@ -17,11 +17,11 @@ migration:
   sorter: "created_at:desc"
   sleep_interval: "1s"
   filter: "created_at:<1488325530496000000"
-  include_fields:
+  included_fields:
     - "field1"
     - "field2"
     - "field3"
-  exclude_fields:
+  excluded_fields:
     - "out_of"
 backup:
   typesense:
@@ -34,11 +34,11 @@ backup:
   max_docs_per_file: "10000"
   sleep_interval: "1s"
   filter: "created_at:<1488325530496000000"
-  include_fields:
+  included_fields:
     - "field1"
     - "field2"
     - "field3"
-  exclude_fields:
+  excluded_fields:
     - "out_of"
 restore:
   typesense:
@@ -56,5 +56,5 @@ delete_collection:
   batch_size: "100"
   sorter: "created_at:asc"
   sleep_interval: "1s"
-  exclude_fields:
+  excluded_fields:
     - "out_of"
