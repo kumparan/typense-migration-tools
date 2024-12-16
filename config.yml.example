@@ -1,0 +1,60 @@
+log_level: "debug"
+http_connection_settings:
+  timeout: "10s"
+  tls_handshake_timeout: "5s"
+migration:
+  source:
+    collection: "collection_a"
+    typesense:
+      host: "http://localhost:8108"
+      api_key: "your-api-key"
+  destination:
+    collection: "collection_b"
+    typesense:
+      host: "http://localhost:8108"
+      api_key: "your-api-key"
+  batch_size: "100"
+  sorter: "created_at:desc"
+  sleep_interval: "1s"
+  filter: "created_at:<1488325530496000000"
+  included_fields:
+    - "field1"
+    - "field2"
+    - "field3"
+  excluded_fields:
+    - "out_of"
+backup:
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
+  batch_size: "100"
+  sorter: "created_at:asc"
+  collection: "collection_name"
+  folder_path: "this/is/path"
+  max_docs_per_file: "10000"
+  sleep_interval: "1s"
+  filter: "created_at:<1488325530496000000"
+  included_fields:
+    - "field1"
+    - "field2"
+    - "field3"
+  excluded_fields:
+    - "out_of"
+restore:
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
+  collection: "collection_name"
+  folder_path: "this/is/path"
+  batch_size: "100"
+  sleep_interval: "1s"
+delete_collection:
+  typesense:
+    host: "http://localhost:8108"
+    api_key: "your-api-key"
+  collection: "collection_name"
+  batch_size: "100"
+  sorter: "created_at:asc"
+  sleep_interval: "1s"
+  excluded_fields:
+    - "out_of"
