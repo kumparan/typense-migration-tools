@@ -4,7 +4,7 @@
 Tools for backup, restore, migrating documents, and deleting collection gracefully on Typesense. The configurations is provided via a `config.yml` file. The application includes validation and credential confirmation before proceeding with the export.
 
 ## Requirements
-- Go 1.22
+- Go 1.23.4
 - Typesense server
 - YAML configuration file (`config.yml`)
 
