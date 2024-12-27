@@ -1,5 +1,7 @@
 SHELL:=/bin/bash
 
+changelog_args=-o CHANGELOG.md -tag-filter-pattern '^v'
+
 ifdef test_run
 	TEST_ARGS := -run $(test_run)
 endif

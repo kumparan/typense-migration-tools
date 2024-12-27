@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"typesense-migration-tools/config"
 
 	"github.com/kumparan/go-connect"
@@ -47,4 +48,16 @@ func dumpTypesenseError(messages ...any) error {
 		errorMsg = fmt.Sprintf("%s, %s", errorMsg, utils.Dump(v))
 	}
 	return fmt.Errorf("unexpected response from typesense, %s", errorMsg)
+}
+
+func isPathExists(path string) (bool, error) {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return info.IsDir(), nil
 }

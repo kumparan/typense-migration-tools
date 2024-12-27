@@ -46,9 +46,13 @@ func runRestore(_ *cobra.Command, _ []string) {
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
 	var confirmation string
-	fmt.Scanln(&confirmation)
-	if confirmation != "yes" {
-		log.Println("Export operation cancelled.")
+	_, err = fmt.Scanln(&confirmation)
+	switch {
+	case err != nil:
+		log.Error(err)
+		return
+	case confirmation != "yes":
+		log.Println("Restore operation cancelled.")
 		return
 	}
 
@@ -96,10 +100,19 @@ func validateRestoreConfig() error {
 		return fmt.Errorf("restore.batch_size must be a positive integer")
 	}
 
+	isExist, err := isPathExists(config.RestoreFolderPath())
+	if err != nil {
+		return err
+	}
+	if !isExist {
+		return fmt.Errorf("restore.folder_path must exist")
+	}
+
 	return nil
 }
 
 func restoreFromFile(ctx context.Context, client typesense.APIClientInterface, filePath string) error {
+	filePath = filepath.Clean(filePath)
 	logger := log.WithFields(log.Fields{
 		"context":         utils.DumpIncomingContext(ctx),
 		"collection":      config.RestoreCollection(),
@@ -115,7 +128,12 @@ func restoreFromFile(ctx context.Context, client typesense.APIClientInterface, f
 		logger.Error(err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	var (
 		scanner     = bufio.NewScanner(file)
