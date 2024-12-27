@@ -51,9 +51,13 @@ func runMigrate(_ *cobra.Command, _ []string) {
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
 	var confirmation string
-	fmt.Scanln(&confirmation)
-	if confirmation != "yes" {
-		log.Println("Export operation cancelled.")
+	_, err = fmt.Scanln(&confirmation)
+	switch {
+	case err != nil:
+		log.Error(err)
+		return
+	case confirmation != "yes":
+		log.Println("Migration operation cancelled.")
 		return
 	}
 

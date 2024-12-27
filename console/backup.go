@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 	"typesense-migration-tools/config"
@@ -49,9 +50,13 @@ func runBackup(_ *cobra.Command, _ []string) {
 	fmt.Print("Do you want to proceed with these config? (yes/no): ")
 
 	var confirmation string
-	fmt.Scanln(&confirmation)
-	if confirmation != "yes" {
-		log.Println("Export operation cancelled.")
+	_, err = fmt.Scanln(&confirmation)
+	switch {
+	case err != nil:
+		log.Error(err)
+		return
+	case confirmation != "yes":
+		log.Println("Backup operation cancelled.")
 		return
 	}
 
@@ -142,6 +147,14 @@ func validateBackupConfig() error {
 		return fmt.Errorf("backup.max_docs_per_file must be a positive integer")
 	}
 
+	isExist, err := isPathExists(config.BackupFolderPath())
+	if err != nil {
+		return err
+	}
+	if !isExist {
+		return fmt.Errorf("backup.folder_path must exist")
+	}
+
 	return nil
 }
 
@@ -171,7 +184,7 @@ func buildBackupSearchParams(page int) (searchParams *typesenseAPI.SearchCollect
 }
 
 func writeChunkToFile(chunk []string, chunkCount int) error {
-	filename := fmt.Sprintf("%s/backup_chunk_%d.jsonl", config.BackupFolderPath(), chunkCount)
+	filename := filepath.Clean(fmt.Sprintf("%s/backup_chunk_%d.jsonl", config.BackupFolderPath(), chunkCount))
 	logger := log.WithField("filename", filename)
 
 	file, err := os.Create(filename)
@@ -179,7 +192,12 @@ func writeChunkToFile(chunk []string, chunkCount int) error {
 		logger.Error(err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	writer := bufio.NewWriter(file)
 	chunkTotalLines := len(chunk)
@@ -197,7 +215,11 @@ func writeChunkToFile(chunk []string, chunkCount int) error {
 		}
 	}
 
-	writer.Flush()
+	err = writer.Flush()
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
 
 	log.Printf("Documents successfully exported to file %s", filename)
 

@@ -2,6 +2,7 @@ package config
 
 import "time"
 
+// Default configuration values
 const (
 	DefaultHTTPTimeout             = 10 * time.Second
 	DefaultHTTPTLSHandshakeTimeout = 5 * time.Second
